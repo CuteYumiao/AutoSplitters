@@ -3,6 +3,7 @@ local tcp = socket.tcp()
 tcp:settimeout(1)
 tcp:connect("localhost", 16834)
 
+local button_state = {}
 local previous = {}
 local current = {}
 local wait_teleport_out = false
@@ -33,7 +34,7 @@ end
 
 
 local function start_trigger()
-    if current.sound == game_start_sound and previous.sound ~= start_screen_sound and emu.isKeyPressed("Start") then
+    if current.sound == game_start_sound and previous.sound ~= start_screen_sound and button_state.start then
         tcp:send("starttimer\r\n")
         return true
     end
@@ -66,6 +67,7 @@ local triggers = {start_trigger, split_trigger}
 
 
 local function run()
+    button_state = emu.getInput(0)
     for k, v in pairs(address) do
         current[k] = emu.read(v, emu.memType.cpu)
     end
